@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Resume AI</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <div id="app">
+
+      <!-- Input Screen -->
+      <div id="screen-input">
+        <h1>Resume AI</h1>
+        <p>Paste your resume, pick your dream job, get a verified skill gap analysis.</p>
+
+        <label>Your Resume</label>
+        <textarea id="resumeInput" placeholder="Paste your resume here..."></textarea>
+
+        <label>Target Job Role</label>
+        <input type="text" id="jobInput" placeholder="e.g. Full Stack Developer" />
+
+        <label>Time Available</label>
+        <select id="timeInput">
+          <option value="">Select duration</option>
+          <option value="1 month">1 month</option>
+          <option value="3 months">3 months</option>
+          <option value="6 months">6 months</option>
+          <option value="1 year">1 year</option>
+        </select>
+
+        <button id="analyzeBtn">Analyze My Resume</button>
+        <p id="errorMsg"></p>
+      </div>
+
+      <!-- Quiz Screen -->
+<div id="screen-quiz" style="display:none;">
+  <h2>Skill Verification</h2>
+  <p>Your resume lists these skills — let's verify them.</p>
+
+  <div class="progress-wrap">
+    <div class="progress-bar" id="quizProgress"></div>
+  </div>
+
+  <div id="quiz-skill-tag"></div>
+  <div id="quiz-question"></div>
+  <div id="quiz-options"></div>
+  <p id="quiz-feedback"></p>
+
+  <button id="quizNextBtn" style="display:none;" onclick="nextQuestion()">
+    Next Question →
+  </button>
+</div>
+
+<!-- Results Screen -->
+<div id="screen-results" style="display:none;">
+  <h2>Your Results</h2>
+  <div id="resultsText"></div>
+</div>
+
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
