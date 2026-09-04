@@ -19,6 +19,45 @@ let quizQuestions = []
 let quizIndex = 0
 let quizAnswers = []
 
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+
+document.getElementById('uploadZone').addEventListener('click', function() {
+  document.getElementById('pdfInput').click()
+})
+
+document.getElementById('pdfInput').addEventListener('change', async function(e) {
+  let file = e.target.files[0]
+  if (!file) return
+
+  document.getElementById('uploadText').textContent = "Reading " + file.name + "..."
+  document.getElementById('uploadZone').style.borderColor = "#1a56cc"
+
+  try {
+    let arrayBuffer = await file.arrayBuffer()
+    let pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+
+    let fullText = ""
+    for (let i = 1; i <= pdf.numPages; i++) {
+      let page = await pdf.getPage(i)
+      let content = await page.getTextContent()
+      let pageText = content.items.map(item => item.str).join(" ")
+      fullText += pageText + "\n"
+    }
+
+    document.getElementById('resumeInput').value = fullText
+    console.log("Extracted text:", fullText)
+
+    document.getElementById('uploadText').textContent = "✅ " + file.name + " ready"
+    document.getElementById('uploadZone').style.borderColor = "#2a7a2a"
+    document.getElementById('uploadZone').style.background = "#f0fff0"
+
+  } catch(err) {
+    document.getElementById('uploadText').textContent = "❌ Failed to read PDF. Try another file."
+    document.getElementById('uploadZone').style.borderColor = "#cc3333"
+    console.log("PDF error:", err)
+  }
+})
+
 analyzeBtn.onclick = async function() {
 
   let resume = resumeInput.value
@@ -210,39 +249,7 @@ function goBack() {
   jobInput.value = ""
   timeInput.value = ""
   errorMsg.textContent = ""
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
-
-document.getElementById('pdfInput').onchange = async function(e) {
-  let file = e.target.files[0]
-  if (!file) return
-
-  document.getElementById('uploadText').textContent = "Reading " + file.name + "..."
-  document.getElementById('uploadZone').style.borderColor = "#1a56cc"
-
-  try {
-    let arrayBuffer = await file.arrayBuffer()
-
-    let pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
-
-    let fullText = ""
-    for (let i = 1; i <= pdf.numPages; i++) {
-      let page = await pdf.getPage(i)
-      let content = await page.getTextContent()
-      let pageText = content.items.map(item => item.str).join(" ")
-      fullText += pageText + "\n"
-    }
-
-    document.getElementById('resumeInput').value = fullText
-
-    document.getElementById('uploadText').textContent = "✅ " + file.name + " uploaded successfully"
-    document.getElementById('uploadZone').style.borderColor = "#2a7a2a"
-    document.getElementById('uploadZone').style.background = "#f0fff0"
-
-  } catch(err) {
-    document.getElementById('uploadText').textContent = "❌ Failed to read PDF. Try another file."
-    document.getElementById('uploadZone').style.borderColor = "#cc3333"
-    console.log("PDF error:", err)
-  }
-}
+  document.getElementById('uploadText').textContent = "Click to upload your resume PDF"
+  document.getElementById('uploadZone').style.borderColor = ""
+  document.getElementById('uploadZone').style.background = ""
 }
