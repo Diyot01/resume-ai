@@ -101,9 +101,10 @@ Reply with this exact JSON only, no extra text, no backticks. Generate quiz ques
 
         # Parse response
         groq_data = groq_response.json()
+        print("Groq raw response:", groq_data)
+        if "choices" not in groq_data:
+            raise Exception("Groq API error: " + str(groq_data))
         text = groq_data["choices"][0]["message"]["content"]
-        text = text.replace("```json", "").replace("```", "").strip()
-        parsed = json.loads(text)
 
         # Add CORS header and return
         response = jsonify(parsed)
