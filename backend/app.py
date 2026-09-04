@@ -2,18 +2,20 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
 import json
+import os
 
 app = Flask(__name__)
-
-# This fixes CORS properly
 CORS(app)
-import os
+
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+
+@app.route("/")
+def health():
+    return "Resume AI Backend is running"
 
 @app.route("/analyze", methods=["POST", "OPTIONS"])
 def analyze():
 
-    # Handle preflight request
     if request.method == "OPTIONS":
         response = jsonify({})
         response.headers.add("Access-Control-Allow-Origin", "*")
@@ -22,13 +24,11 @@ def analyze():
         return response
 
     try:
-        # Read data from frontend
         data = request.get_json()
         resume = data["resume"]
         job = data["job"]
         time = data["time"]
 
-        # Build prompt
         prompt = f"""You are a career coach AI. Analyze this resume for someone targeting a "{job}" role who has "{time}" to grow.
 
 Resume:
@@ -83,7 +83,6 @@ Reply with this exact JSON only, no extra text, no backticks. Generate quiz ques
   ]
 }}"""
 
-        # Call Groq API
         groq_response = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
             headers={
@@ -91,7 +90,7 @@ Reply with this exact JSON only, no extra text, no backticks. Generate quiz ques
                 "Content-Type": "application/json"
             },
             json={
-                "model": "llama-3.3-70b-versatile",
+                "model": "llama3-70b-8192",
                 "max_tokens": 1000,
                 "messages": [
                     {"role": "user", "content": prompt}
@@ -99,26 +98,27 @@ Reply with this exact JSON only, no extra text, no backticks. Generate quiz ques
             }
         )
 
-        # Parse response
         groq_data = groq_response.json()
         print("Groq raw response:", groq_data)
+
         if "choices" not in groq_data:
             raise Exception("Groq API error: " + str(groq_data))
-        text = groq_data["choices"][0]["message"]["content"]
 
-        # Add CORS header and return
+        text = groq_data["choices"][0]["message"]["content"]
+        text = text.replace("```json", "").replace("```", "").strip()
+        parsed = json.loads(text)
+
         response = jsonify(parsed)
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
     except Exception as e:
-      import traceback
-      traceback.print_exc()
-      print("ERROR:", str(e))
-      response = jsonify({"error": str(e)})
-      response.headers.add("Access-Control-Allow-Origin", "*")
-      return response, 500
-
+        import traceback
+        traceback.print_exc()
+        print("ERROR:", str(e))
+        response = jsonify({"error": str(e)})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
