@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>Resume AI</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   </head>
   <body>
 
@@ -15,7 +16,13 @@
         <p>Paste your resume, pick your dream job, get a verified skill gap analysis.</p>
 
         <label>Your Resume</label>
-        <textarea id="resumeInput" placeholder="Paste your resume here..."></textarea>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('pdfInput').click()">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text" id="uploadText">Click to upload your resume PDF</div>
+          <div class="upload-sub">Only PDF files accepted</div>
+        </div>
+        <input type="file" id="pdfInput" accept=".pdf" style="display:none;" />
+        <textarea id="resumeInput" style="display:none;"></textarea>
 
         <label>Target Job Role</label>
         <input type="text" id="jobInput" placeholder="e.g. Full Stack Developer" />

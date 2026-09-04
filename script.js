@@ -1,4 +1,3 @@
-// Get all elements
 let analysisResult = null
 let analyzeBtn = document.getElementById("analyzeBtn")
 let resumeInput = document.getElementById("resumeInput")
@@ -20,7 +19,6 @@ let quizQuestions = []
 let quizIndex = 0
 let quizAnswers = []
 
-// When analyze button is clicked
 analyzeBtn.onclick = async function() {
 
   let resume = resumeInput.value
@@ -28,7 +26,7 @@ analyzeBtn.onclick = async function() {
   let time = timeInput.value
 
   if (resume === "") {
-    errorMsg.textContent = "Please paste your resume first."
+    errorMsg.textContent = "Please upload your resume PDF first."
     return
   }
   if (job === "") {
@@ -212,4 +210,39 @@ function goBack() {
   jobInput.value = ""
   timeInput.value = ""
   errorMsg.textContent = ""
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+
+document.getElementById('pdfInput').onchange = async function(e) {
+  let file = e.target.files[0]
+  if (!file) return
+
+  document.getElementById('uploadText').textContent = "Reading " + file.name + "..."
+  document.getElementById('uploadZone').style.borderColor = "#1a56cc"
+
+  try {
+    let arrayBuffer = await file.arrayBuffer()
+
+    let pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+
+    let fullText = ""
+    for (let i = 1; i <= pdf.numPages; i++) {
+      let page = await pdf.getPage(i)
+      let content = await page.getTextContent()
+      let pageText = content.items.map(item => item.str).join(" ")
+      fullText += pageText + "\n"
+    }
+
+    document.getElementById('resumeInput').value = fullText
+
+    document.getElementById('uploadText').textContent = "✅ " + file.name + " uploaded successfully"
+    document.getElementById('uploadZone').style.borderColor = "#2a7a2a"
+    document.getElementById('uploadZone').style.background = "#f0fff0"
+
+  } catch(err) {
+    document.getElementById('uploadText').textContent = "❌ Failed to read PDF. Try another file."
+    document.getElementById('uploadZone').style.borderColor = "#cc3333"
+    console.log("PDF error:", err)
+  }
+}
 }
