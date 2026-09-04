@@ -90,7 +90,7 @@ Reply with this exact JSON only, no extra text, no backticks. Generate quiz ques
                 "Content-Type": "application/json"
             },
             json={
-                "model": "llama-3.1-70b-versatile",
+                "model": "llama-3.1-8b-instant",
                 "max_tokens": 1000,
                 "messages": [
                     {"role": "user", "content": prompt}
