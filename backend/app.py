@@ -91,7 +91,7 @@ Reply with this exact JSON only, no extra text, no backticks. Generate quiz ques
             },
             json={
                 "model": "openai/gpt-oss-20b",
-                "max_tokens": 1000,
+                "max_tokens": 4000,
                 "messages": [
                     {"role": "user", "content": prompt}
                 ]
