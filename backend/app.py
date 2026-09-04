@@ -111,10 +111,12 @@ Reply with this exact JSON only, no extra text, no backticks. Generate quiz ques
         return response
 
     except Exception as e:
-        print("ERROR:", str(e))
-        response = jsonify({"error": str(e)})
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        return response, 500
+      import traceback
+      traceback.print_exc()
+      print("ERROR:", str(e))
+      response = jsonify({"error": str(e)})
+      response.headers.add("Access-Control-Allow-Origin", "*")
+      return response, 500
 
 
 if __name__ == "__main__":
